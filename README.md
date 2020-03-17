@@ -69,7 +69,7 @@ Furthermore, configuration is not constrained by hardcoded author defined defaul
   ```bash
   # Property: elasticsearch.hosts
   # Value: list of Elasticsearch instances ['es1.cluster.domain', 'es2.cluster.domain']
-  CONFIG_elasticsearch.hosts"=['es1.cluster.domain', 'es2.cluster.domain']"
+  CONFIG_elasticsearch.hosts="['es1.cluster.domain', 'es2.cluster.domain']"
   ```
 
   A list of configurable *Kibana* settings can be found [here](https://github.com/elastic/kibana/blob/master/config/kibana.yml).
