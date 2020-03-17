@@ -3,7 +3,7 @@
 
 Container File :microscope: :stars: Kibana
 =========
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/container-file-elasticsearch?color=yellow)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/container-file-kibana?color=yellow)
 [![Build Status](https://travis-ci.org/0x0I/container-file-kibana.svg?branch=master)](https://travis-ci.org/0x0I/container-file-kibana)
 [![Docker Pulls](https://img.shields.io/docker/pulls/0labs/0x01.kibana?style=flat)](https://hub.docker.com/repository/docker/0labs/0x01.kibana)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
@@ -41,94 +41,74 @@ Variables are available and organized according to the following software & mach
 
 #### Config
 
-Using this image, configuration of `elasticsearch` is expressed within 3 forms:
-- `elasticsearch.yml` file for configuring Elasticsearch
-- `log4j2.properties` file for configuring Elasticsearch logging
-- `$ES_JAVA_OPTS` environment variables for configuring Elasticsearch JVM settings
+**Kibana** supports specification of various options controlling aspects of its operational behavior and profile. Each configuration can be expressed within a `YAML` configuration file, `kibana.yml` by default, composed of **key=vaue** pairs representing configuration properties available. Each of these configurations can be expressed using environment variables prefixed with `CONFIG_` organized according to the following:
 
-The location of these configuration files within a container is based on an `$ES_HOME` environment variable, set during image build and defaulting to `/opt/elasticsearch`.
-
-For additional details and to get an idea how each config should look, reference Elastic's official [configuration](https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html) documentation.
+For additional details and to get an idea how each config should look, reference Kibana's official [configuration](https://www.elastic.co/guide/en/kibana/current/settings.html) documentation.
 
 _The following variables can be customized to manage the location and content of these configurations:_
 
 Each configuration applied to the operational behavior of the server can be expressed using environment variables prefixed with `CONFIG_` organized according to the following:
-* **storage paths** - settings related to locations of runtime variable data (e.g. logs and indices data)
-* **node role/profile policy** - [settings](https://github.com/elastic/elasticsearch/blob/master/docs/reference/modules/node.asciidoc) which manage a node's role and operational responsibilities within a cluster
-* **cluster** - controls cluster allocation, logging, metadata and miscellaneous management [settings](https://github.com/elastic/elasticsearch/blob/master/docs/reference/modules/cluster.asciidoc)
-* **discovery** - [settings](https://github.com/elastic/elasticsearch/blob/master/docs/reference/modules/discovery.asciidoc) responsible for discovering nodes, electing a master, forming a cluster, and publishing the cluster state changes
-* **network** - network based [settings](https://github.com/elastic/elasticsearch/blob/master/docs/reference/modules/network.asciidoc) defining how an `elasticserch` instance communicates over a network
+* **kibana(server) settings** - various settings related to server operational in addition to local/remote identity broadcasting behavior
+* **elasticsearch connectivity** - settings which manage connectivity parameters with an Elasticsearch cluster as well Kibana index sharding/replication management
+* **operations** - controls output level and frequency of operational data (e.g. logs, metrics)
 
 `$CONFIG_<config-property> = <property-value (string)>` **default**: *None*
 
-* Any configuration setting/value key-pair supported by `elasticsearch` should be expressible within each `CONFIG_` environment variable and properly rendered within the associated `elasticsearch.yml`. **Note:** `<config-property>` along with the `property-value` specifications should be written as expected to be rendered within the associated *properties* config (**e.g.** `CONFIG_node.name=example_node` or  `CONFIG_network.host=0.0.0.0`).
+* Any configuration setting/value key-pair supported by `kibana` should be expressible within each `CONFIG_` environment variable and properly rendered within the associated `kibana.yml`. **Note:** `<config-property>` along with the `property-value` specifications should be written as expected to be rendered within the associated *properties* config (**e.g.** `CONFIG_server.name=example_kibana` or  `CONFIG_server.host=0.0.0.0`).
 
-Furthermore, configuration is not constrained by hardcoded author defined defaults or limited by pre-baked templating. If the config section, setting and value are recognized by your `Elasticsearch` version, :thumbsup: to define within an environnment variable according to the following syntax.
+Furthermore, configuration is not constrained by hardcoded author defined defaults or limited by pre-baked templating. If the config section, setting and value are recognized by your `Kibana` version, :thumbsup: to define within an environnment variable according to the following syntax.
 
   `<config-property>` -- represents a specific configuration property to set:
 
   ```bash
-  # Property: discovery.seed_hosts (peer nodes in target cluster likely to be live and contactable for seeding the discovery process)
-  CONFIG_discovery.seed_hosts=<property-value>
+  # Property: elasticsearch.hosts (URLs of the Elasticsearch instances to use for all your queries)
+  CONFIG_elasticsearch.hosts=<property-value>
   ```
 
   `<property-value>` -- represents property value to configure:
   ```bash
-  # Property: discovery.seed_hosts
-  # Value: list of additional peers resolved by hostname ['es1.cluster.domain', 'es2.cluster.domain']
-  CONFIG_discovery.seed_hosts=['es1.cluster.domain', 'es2.cluster.domain']
+  # Property: elasticsearch.hosts
+  # Value: list of Elasticsearch instances ['es1.cluster.domain', 'es2.cluster.domain']
+  CONFIG_elasticsearch.hosts"=['es1.cluster.domain', 'es2.cluster.domain']"
   ```
 
-  A list of configurable *Elasticsearch* settings can be found [here](https://github.com/elastic/elasticsearch/tree/master/docs/reference).
-
-##### Log4j Config
-
-Elasticsearch's logging facility is managed via [Log4j](https://logging.apache.org/log4j/2.x/), a logging service/framework built under the Apache project; with its configuration defined in a `log4j.properties` file located underneath its main `$ES_HOME/config` directory by default. As with other configuration mechanisms supported by this image, each configuration can be expressed as environment variables prefixed with `LOG4J_`.
-
-`$LOG4J_<config-property> = <property-value (string)>` **default**: *none*
-
-See [here](https://github.com/elastic/elasticsearch/blob/master/distribution/src/config/log4j2.properties) for an example configuration file and list of supported settings.
-
-##### JVM Options
-
-Elasticsearch uses the following environment variable to manage various aspects of its JVM environment:
-
-`$ES_JAVA_OPTS = <mem-heap-mgmt-settings (string)>` **default**: *None*
-
-* Adjust general memory management options used during node operation (e.g. `-Xmx256M -Xms256M`).
-
-See [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/jvm-options.html) for more details and [here](https://github.com/elastic/elasticsearch/blob/master/distribution/src/config/jvm.options) for an example of available options.
+  A list of configurable *Kibana* settings can be found [here](https://github.com/elastic/kibana/blob/master/config/kibana.yml).
 
 #### Launch
 
-Running an `elasticsearch` node is accomplished utilizing official **Elasticsearch** binaries published and available [here](https://www.elastic.co/downloads/elasticsearch). Launched subject to the configuration and execution potential provided by the underlying application, an `elasticsearch` node can be set to adhere to system administrative policies right for your environment and organization.
+Running a `kibana` instance is accomplished utilizing official **Kibana** binaries published and available [here](https://www.elastic.co/downloads/past-releases#kibana). Launched subject to the configuration and execution potential provided by the underlying application, a `Kibana` instance can be set to adhere to system administrative policies right for your environment and organization.
 
-_The following variables can be customized to manage Elasticsearch's execution profile/policy:_
+_The following variables can be customized to manage Kibana's execution profile/policy:_
 
-`$EXTRA_RUN_ARGS: <elasticsearch-cli-options>` (**default**: *NONE*)
-- list of `elasticsearch` commandline arguments to pass to the binary at runtime for customizing launch.
+`$EXTRA_RUN_ARGS: <kibana-cli-options>` (**default**: *NONE*)
+- list of `kibana` commandline arguments to pass to the binary at runtime for customizing launch.
 
-Supporting full expression of `elasticsearch`'s cli, this variable enables the role of target hosts to be customized according to the user's specification; whether to specify a particular process id (PID) file for process management, running a node in a verbose or silent logging mode or passing an assortment of configuration operation overrides.
+Supporting full expression of `kibana`'s cli, this variable enables the role of target hosts to be customized according to the user's specification; whether to specify a particular port for the Node server to listen on, running an instance in a verbose or silent logging mode or passing a list of Elasticsearch instances to connect to.
 
-  A list of available command-line options can be found [here](https://gist.github.com/0x0I/f9890f486ff215cfc39642c4d7eccc01).
+  A list of available command-line options can be found [here](https://gist.github.com/0x0I/ac0becf96aa6d18fd8f8f29c3a1d0c1c).
 
 ##### Examples
 
-  Turn off or enhance standard output/error streams logging in console:
+  Prevent all logging or most logging with the exception of errors:
   ```bash
-  EXTRA_RUN_ARGS=--quiet  # off
+  EXTRA_RUN_ARGS=--silent  # prevent all logging
   # ...or...
-  EXTRA_RUN_ARGS=--verbose  # on++
+  EXTRA_RUN_ARGS=--quiet  # turn off logging with exception of errors
   ```
 
-  Enhance logging and debugging capabilities for troubleshooting issues:
+  Modify bind host to accept connections from remote clients
+  ```
+  EXTRA_RUN_ARGS="--host 0.0.0.0"
+  ```
+  
+  Specify custom set of Elasticsearch instances to connect to:
   ```bash
-  EXTRA_RUN_ARGS="--pid /path/to/pid" # creates specific pid file in the specified path on start
+  EXTRA_RUN_ARGS="--elasticsearch http://es1.cluster.domain:9200,http://es2.cluster.doman:9200"
   ```
 
-  Update node identity:
+  Update path to scan for plugins
   ```
-  EXTRA_RUN_ARGS="-E node.name=my-example-node -E cluster.name=my-example-cluster"
+  EXTRA_RUN_ARGS="--plugin-dir /path/to/plugins"
   ```
 
 Dependencies
@@ -140,7 +120,7 @@ Example Run
 ----------------
 default example:
 ```
-podman run --publish 9200:9200 0labs/0x01.elasticsearch:7.6.1_centos-7
+podman run --publish 5601:5601 0labs/0x01.kibana:7.6.1_centos-7
 ```
 
 provision hybrid master/data node with customized data and logging directories:
