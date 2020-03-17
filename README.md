@@ -49,7 +49,7 @@ _The following variables can be customized to manage the location and content of
 
 Each configuration applied to the operational behavior of the server can be expressed using environment variables prefixed with `CONFIG_` organized according to the following:
 * **kibana(server) settings** - various settings related to server operational in addition to local/remote identity broadcasting behavior
-* **elasticsearch connectivity** - settings which manage connectivity parameters with an Elasticsearch cluster as well Kibana index sharding/replication management
+* **elasticsearch connectivity** - settings which manage connectivity parameters with an Elasticsearch cluster as well *Kibana* index sharding/replication management
 * **operations** - controls output level and frequency of operational data (e.g. logs, metrics)
 
 `$CONFIG_<config-property> = <property-value (string)>` **default**: *None*
@@ -123,24 +123,28 @@ default example:
 podman run --publish 5601:5601 0labs/0x01.kibana:7.6.1_centos-7
 ```
 
-provision hybrid master/data node with customized data and logging directories:
+customize instance identity and Elasticsearch cluster to query:
 ```
-podman run --env CONFIG_cluster.name=example-cluster \
-           --env CONFIG_node.master=true \
-           --env CONFIG_node.data=true \
-           --env CONFIG_path.data=/mnt/data/elasticsearch \
-           --env CONFIG_path.logs=/mnt/logs/elasticsearch \
-           --volume es_data:/mnt \
-           0labs/0x01.elasticsearch:7.6.1_centos-7
+podman run --env CONFIG_server.name=example-kibana \
+           --env CONFIG_server.host=http://kibana1.cluster.domain \
+           --env CONFIG_elasticsearch.hosts="['http://es1m.cluster.domain:9200', 'http://es2m.cluster.domain.9200']
+           0labs/0x01.kibana:7.6.1_centos-7
 ```
 
-adjust JVM heap settings and enable verbose logging for cluster debugging/troubleshooting:
+enhance logging and ops polling for troubleshooting purposes:
 ```
-podman run --env ES_JAVA_OPTS='-Xms16g -Xmx16g' \
-           --env LOG4J_logger.action.name=org.elasticsearch.action \
-           --env LOG4J_logger.action.level=debug \
-           --env EXTRA_RUN_ARGS=--verbose \
-           0labs/0x01.elasticsearch:7.6.1_centos-7
+podman run --env CONFIG_logging.verbose=true \
+           --env CONFIG_elasticsearch.logQueries=true \
+           --env CONFIG_ops.interval=100 \
+           --env CONFIG_server.maxPayloadBytes=10485760 \
+           --env CONFIG_elasticsearch.requestTimeout=60000 \
+           0labs/0x01.kibana:7.6.1_centos-7
+```
+
+load plugins from multiple paths:
+```
+podman run --env EXTRA_RUN_ARGS="--plugin-dir /path/to/new/plugins --plugin-dir /path/to/legacy/plugins" \
+           0labs/0x01.kibana:7.6.1_centos-7
 ```
 
 License
