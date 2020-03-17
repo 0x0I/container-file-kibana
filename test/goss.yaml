@@ -1,0 +1,32 @@
+file:
+  /opt/kibana:
+    exists: true
+    mode: "0755"
+    owner: kibana
+    group: kibana
+    filetype: directory
+  /opt/kibana/bin/kibana:
+    exists: true
+    mode: "0755"
+    owner: kibana
+    group: kibana
+    filetype: file
+  /opt/kibana/config/kibana.yml:
+    exists: true
+    mode: "0644"
+    owner: kibana
+    group: kibana
+    filetype: file
+    contains:
+      - "server.name:"
+      - "server.host:"
+      - "server.port:"
+      - "logging.verbose:"
+process:
+  node:
+    running: true
+    skip: false
+port:
+  tcp:5607:
+    listening: true
+    skip: false
