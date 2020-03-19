@@ -41,16 +41,14 @@ Variables are available and organized according to the following software & mach
 
 #### Config
 
-**Kibana** supports specification of various options controlling aspects of its operational behavior and profile. Each configuration can be expressed within a `YAML` configuration file, `kibana.yml` by default, composed of **key=vaue** pairs representing configuration properties available. Each of these configurations can be expressed using environment variables prefixed with `CONFIG_` organized according to the following:
+**Kibana** supports specification of various options controlling aspects of its operational behavior and profile. Each configuration can be expressed within a `YAML` configuration file, `kibana.yml` by default, composed of **key: vaue** pairs representing configuration properties available. Each of these configurations can be expressed using environment variables prefixed with `CONFIG_` organized according to the following:
 
-For additional details and to get an idea how each config should look, reference Kibana's official [configuration](https://www.elastic.co/guide/en/kibana/current/settings.html) documentation.
-
-_The following variables can be customized to manage the location and content of these configurations:_
-
-Each configuration applied to the operational behavior of the server can be expressed using environment variables prefixed with `CONFIG_` organized according to the following:
 * **kibana(server) settings** - various settings related to server operational in addition to local/remote identity broadcasting behavior
 * **elasticsearch connectivity** - settings which manage connectivity parameters with an Elasticsearch cluster as well *Kibana* index sharding/replication management
 * **operations** - controls output level and frequency of operational data (e.g. logs, metrics)
+
+
+_The following variables can be customized to manage the location and content of these configurations:_
 
 `$CONFIG_<config-property> = <property-value (string)>` **default**: *None*
 
@@ -72,7 +70,7 @@ Furthermore, configuration is not constrained by hardcoded author defined defaul
   CONFIG_elasticsearch.hosts="['es1.cluster.domain', 'es2.cluster.domain']"
   ```
 
-  A list of configurable *Kibana* settings can be found [here](https://github.com/elastic/kibana/blob/master/config/kibana.yml).
+For additional details and to get an idea how each config should look, reference Kibana's official [configuration](https://www.elastic.co/guide/en/kibana/current/settings.html) documentation. An example of configurable *Kibana* settings can be found [here](https://github.com/elastic/kibana/blob/master/config/kibana.yml).
 
 #### Launch
 
