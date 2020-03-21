@@ -1,34 +1,29 @@
 FROM {{ os_version }}
 
 LABEL maintainer="O1.IO"
+
 {% if system_dependencies|length > 0 %}
 
 RUN {{ package_manager }} update -y && \
     {{ package_manager }} install -y {{ system_dependencies|join(' ') }}
 {% endif %}
 
-ENV KIBANA_HOME=/opt/kibana
-ENV KIBANA_USER=kibana
-
-RUN useradd $KIBANA_USER
-
-RUN mkdir -p $KIBANA_HOME && curl -L {{ archive_url }} | tar xzf - --strip-components=1 -C $KIBANA_HOME
-
-RUN chown -R "${KIBANA_USER}:${KIBANA_USER}" $KIBANA_HOME
-
-ENV PATH $PATH:${KIBANA_HOME}/bin
-
 RUN mkdir /entrypoint.d
 COPY entrypoints/10-setup-config.sh /entrypoint.d/
 
 COPY scripts/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
 COPY scripts/start-kibana.sh /usr/bin/start-kibana.sh
-RUN chmod +x /usr/bin/start-kibana.sh
+RUN chmod +x /entrypoint.sh /usr/bin/start-kibana.sh
+
+ENV KIBANA_HOME=/opt/kibana
+WORKDIR $KIBANA_HOME
+
+ENV KIBANA_USER=kibana
+RUN useradd --no-create-home --system --user-group $KIBANA_USER
+RUN chown -R "${KIBANA_USER}:${KIBANA_USER}" $KIBANA_HOME
 
 USER $KIBANA_USER
+RUN curl -L {{ archive_url }} | tar xzf - --strip-components=1 -C $KIBANA_HOME
 
 ENTRYPOINT ["/entrypoint.sh"]
-
 CMD ["start-kibana.sh"]
