@@ -139,9 +139,11 @@ podman run --env CONFIG_logging.verbose=true \
            0labs/0x01.kibana:7.6.1_centos-7
 ```
 
-load plugins from multiple paths:
+load plugins from multiple paths and provide named volume for data persistence:
 ```
 podman run --env EXTRA_RUN_ARGS="--plugin-dir /path/to/new/plugins --plugin-dir /path/to/legacy/plugins" \
+           --volume /host/path/to/plugins:/path/to \
+           --volume kibana_data:/opt/kibana/data \
            0labs/0x01.kibana:7.6.1_centos-7
 ```
 
